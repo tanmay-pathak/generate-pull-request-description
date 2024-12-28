@@ -16,40 +16,40 @@ PULL_REQUEST_START = "PULL_REQUEST_START"
 STOP_POINTS = (LAST_RELEASE, PULL_REQUEST_START)
 
 BREAKING_CHANGE_INDICATOR = "💥 **BREAKING CHANGE:** "
-UPGRADE_INSTRUCTIONS_HEADER = "# Upgrade instructions"
+UPGRADE_INSTRUCTIONS_HEADER = "# 🔄 Upgrade instructions"
 
 COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
 SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
 CONVENTIONAL_COMMIT_PATTERN = re.compile(r"^(?P<type>[a-zA-Z]+)(?:\((?P<scope>[^)]+)\))?:")
 
-OTHER_SECTION_HEADING = "#### Other"
-UNCATEGORISED_SECTION_HEADING = "#### Uncategorised!"
+OTHER_SECTION_HEADING = "#### 🔀 Other"
+UNCATEGORISED_SECTION_HEADING = "#### ❓ Uncategorised!"
 
 COMMIT_CODES_TO_HEADINGS_MAPPING = {
-    "feat": "#### New Features",
-    "fix": "#### Bug Fixes",
-    "docs": "#### Documentation",
-    "style": "#### Style",
-    "refactor": "#### Refactoring",
-    "perf": "#### Performance Improvements",
-    "test": "#### Tests",
-    "build": "#### Build System",
-    "ci": "#### CI",
-    "chore": "#### Chores",
+    "feat": "#### ✨ New Features",
+    "fix": "#### 🐛 Bug Fixes",
+    "docs": "#### 📚 Documentation",
+    "style": "#### 💅 Style",
+    "refactor": "#### ♻️ Refactoring",
+    "perf": "#### ⚡️ Performance Improvements",
+    "test": "#### 🧪 Tests",
+    "build": "#### 🏗️ Build System",
+    "ci": "#### 🤖 CI",
+    "chore": "#### 🧹 Chores",
     # Legacy mappings for backward compatibility
-    "FEA": "#### New features",
-    "ENH": "#### Enhancements",
-    "FIX": "#### Fixes",
-    "OPS": "#### Operations",
-    "DEP": "#### Dependencies",
-    "REF": "#### Refactoring",
-    "TST": "#### Testing",
-    "MRG": OTHER_SECTION_HEADING,
-    "REV": "#### Reversions",
-    "CHO": "#### Chores",
-    "STY": "#### Style",
-    "WIP": OTHER_SECTION_HEADING,
-    "DOC": OTHER_SECTION_HEADING,
+    "FEA": "#### ✨ New features",
+    "ENH": "#### 🚀 Enhancements",
+    "FIX": "#### 🐛 Fixes",
+    "OPS": "#### 🔧 Operations",
+    "DEP": "#### 📦 Dependencies",
+    "REF": "#### ♻️ Refactoring",
+    "TST": "#### 🧪 Testing",
+    "MRG": "#### 🔀 Other",
+    "REV": "#### ⏮️ Reversions",
+    "CHO": "#### 🧹 Chores",
+    "STY": "#### 💅 Style",
+    "WIP": "#### 🚧 Other",
+    "DOC": "#### 📚 Other",
 }
 
 BREAKING_CHANGE_COUNT_KEY = "BREAKING CHANGE COUNT"
