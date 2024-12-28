@@ -1,9 +1,11 @@
+# Conventional Commits Changelog Generator
 
-# Pull request description generator
+A GitHub action that generates structured changelogs from [Conventional Commit messages](https://www.conventionalcommits.org/en/v1.0.0/) in your pull requests. Built upon the excellent work by [octue/generate-pull-request-description](https://github.com/octue/generate-pull-request-description), this fork adds several improvements:
 
-A GitHub action that generates pull request descriptions from
-[Conventional Commit messages](https://www.conventionalcommits.org/en/v1.0.0/) on a branch. These descriptions can be
-used with other GitHub actions to automate release notes.
+- Support for latest Conventional Commits standard
+- Added support for commit scopes (e.g. `feat(api): new endpoint`)
+- Enhanced section headings with emojis
+- Improved categorization of commits
 
 ## Features summary
 
