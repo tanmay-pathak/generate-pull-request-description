@@ -1,6 +1,6 @@
 name: 'Generate pull request description'
 description: "Dynamically generate the pull request description for a branch from its commit messages."
-author: 'cortadocodes'
+author: 'tanmay-pathak'
 branding:
   icon: git-pull-request
   color: green
