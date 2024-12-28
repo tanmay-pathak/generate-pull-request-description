@@ -1,5 +1,5 @@
 name: 'Conventional Commits Changelog Generator'
-description: "Automatically generates a structured changelog from conventional commits in your pull request, including breaking changes and upgrade instructions."
+description: "Generate a structured changelog from conventional commits in your pull request."
 author: 'tanmay-pathak'
 branding:
   icon: git-pull-request
