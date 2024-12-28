@@ -25,6 +25,17 @@ OTHER_SECTION_HEADING = "### Other"
 UNCATEGORISED_SECTION_HEADING = "### Uncategorised!"
 
 COMMIT_CODES_TO_HEADINGS_MAPPING = {
+    "feat": "### New Features",
+    "fix": "### Bug Fixes",
+    "docs": "### Documentation",
+    "style": "### Style",
+    "refactor": "### Refactoring",
+    "perf": "### Performance Improvements",
+    "test": "### Tests",
+    "build": "### Build System",
+    "ci": "### CI",
+    "chore": "### Chores",
+    # Legacy mappings for backward compatibility
     "FEA": "### New features",
     "ENH": "### Enhancements",
     "FIX": "### Fixes",
