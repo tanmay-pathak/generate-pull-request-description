@@ -59,4 +59,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: tanmay-pathak/generate-pull-request-description:${{ needs.get-version.outputs.package_version }},octue/generate-pull-request-description:latest
+          tags: tanmay-pathak/generate-pull-request-description:${{ needs.get-version.outputs.package_version }},tanmay-pathak/generate-pull-request-description:latest
