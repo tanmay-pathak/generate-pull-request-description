@@ -240,10 +240,11 @@ class PullRequestDescriptionGenerator:
 
             # Extract type and scope (if present)
             commit_type = match.group('type')
+            scope = match.group('scope')
             # Get the rest of the message after the type(scope): prefix
             message = header[header.find(':') + 1:].strip()
 
-            parsed_commits.append((commit_type.strip(), message.strip(), body.strip()))
+            parsed_commits.append((commit_type.strip(), scope, message.strip(), body.strip()))
 
         return parsed_commits, unparsed_commits
 
@@ -269,10 +270,11 @@ class PullRequestDescriptionGenerator:
 
             # Extract type and scope (if present)
             commit_type = match.group('type')
+            scope = match.group('scope')
             # Get the rest of the message after the type(scope): prefix
             message = header[header.find(':') + 1:].strip()
 
-            parsed_commits.append((commit_type.strip(), message.strip(), body.strip()))
+            parsed_commits.append((commit_type.strip(), scope, message.strip(), body.strip()))
 
         return parsed_commits, unparsed_commits
 
@@ -289,10 +291,13 @@ class PullRequestDescriptionGenerator:
 
         breaking_change_upgrade_instructions = []
 
-        for code, header, body in parsed_commits:
+        for code, scope, header, body in parsed_commits:
             try:
+                # Format the commit note with scope if present
+                formatted_header = f"({scope}) {header}" if scope else header
+
                 if any(indicator in body for indicator in CONVENTIONAL_COMMIT_BREAKING_CHANGE_INDICATORS):
-                    commit_note = BREAKING_CHANGE_INDICATOR + header
+                    commit_note = BREAKING_CHANGE_INDICATOR + formatted_header
                     categorised_commits[BREAKING_CHANGE_COUNT_KEY] += 1
 
                     # Remove the breaking change indicator from the body and put the body in a collapsible section
@@ -301,13 +306,13 @@ class PullRequestDescriptionGenerator:
 
                     breaking_change_upgrade_instructions.append(
                         "<details>\n"
-                        f"<summary>💥 <b>{header}</b></summary>\n"
+                        f"<summary>💥 <b>{formatted_header}</b></summary>\n"
                         f"\n{upgrade_instruction}\n"
                         "</details>"
                     )
 
                 else:
-                    commit_note = header
+                    commit_note = formatted_header
 
                 categorised_commits[self.commit_codes_to_headings_mapping[code]].append(commit_note)
 
