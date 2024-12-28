@@ -60,4 +60,3 @@ jobs:
           context: .
           push: true
           tags: tanmaypathak/generate-pull-request-description:${{ needs.get-version.outputs.package_version }},tanmaypathak/generate-pull-request-description:latest
-          platforms: linux/amd64,linux/arm64

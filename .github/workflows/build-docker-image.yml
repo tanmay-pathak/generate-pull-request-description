@@ -33,4 +33,3 @@ jobs:
           context: .
           push: true
           tags: tanmaypathak/generate-pull-request-description:${{ github.event.inputs.tag }},tanmaypathak/generate-pull-request-description:latest
-          platforms: linux/amd64,linux/arm64
