@@ -20,6 +20,7 @@ UPGRADE_INSTRUCTIONS_HEADER = "# Upgrade instructions"
 
 COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
 SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
+CONVENTIONAL_COMMIT_PATTERN = re.compile(r"^(?P<type>[a-zA-Z]+)(?:\((?P<scope>[^)]+)\))?:")
 
 OTHER_SECTION_HEADING = "### Other"
 UNCATEGORISED_SECTION_HEADING = "### Uncategorised!"
@@ -230,20 +231,19 @@ class PullRequestDescriptionGenerator:
             if "tag" in decoration and bool(SEMANTIC_VERSION_PATTERN.search(decoration)):
                 break
 
-            # A colon separating the commit code from the commit header is required - keep commit messages that
-            # don't conform to this but put them into an unparsed category. Ignore commits that are merges of one
-            # commit ref into another (GitHub Actions produces these - they don't appear in the actual history of
-            # the branch so can be safely ignored when making release notes).
-            if ":" not in header:
+            # Check if the commit message follows conventional commit format
+            match = CONVENTIONAL_COMMIT_PATTERN.match(header)
+            if not match:
                 if not COMMIT_REF_MERGE_PATTERN.search(header):
                     unparsed_commits.append(header.strip())
                 continue
 
-            # Allow commit headers with extra colons.
-            code, *header = header.split(":")
-            header = ":".join(header)
+            # Extract type and scope (if present)
+            commit_type = match.group('type')
+            # Get the rest of the message after the type(scope): prefix
+            message = header[header.find(':') + 1:].strip()
 
-            parsed_commits.append((code.strip(), header.strip(), body.strip()))
+            parsed_commits.append((commit_type.strip(), message.strip(), body.strip()))
 
         return parsed_commits, unparsed_commits
 
@@ -260,20 +260,19 @@ class PullRequestDescriptionGenerator:
             header, *body = commit["commit"]["message"].split("\n")
             body = "\n".join(body)
 
-            # A colon separating the commit code from the commit header is required - keep commit messages that
-            # don't conform to this but put them into an unparsed category. Ignore commits that are merges of one
-            # commit ref into another (GitHub Actions produces these - they don't appear in the actual history of
-            # the branch so can be safely ignored when making release notes).
-            if ":" not in header:
+            # Check if the commit message follows conventional commit format
+            match = CONVENTIONAL_COMMIT_PATTERN.match(header)
+            if not match:
                 if not COMMIT_REF_MERGE_PATTERN.search(header):
                     unparsed_commits.append(header.strip())
                 continue
 
-            # Allow commit headers with extra colons.
-            code, *header = header.split(":")
-            header = ":".join(header)
+            # Extract type and scope (if present)
+            commit_type = match.group('type')
+            # Get the rest of the message after the type(scope): prefix
+            message = header[header.find(':') + 1:].strip()
 
-            parsed_commits.append((code.strip(), header.strip(), body.strip()))
+            parsed_commits.append((commit_type.strip(), message.strip(), body.strip()))
 
         return parsed_commits, unparsed_commits
 
