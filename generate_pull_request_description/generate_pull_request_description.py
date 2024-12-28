@@ -20,22 +20,34 @@ UPGRADE_INSTRUCTIONS_HEADER = "# Upgrade instructions"
 
 COMMIT_REF_MERGE_PATTERN = re.compile(r"Merge [0-9a-f]+ into [0-9a-f]+")
 SEMANTIC_VERSION_PATTERN = re.compile(r"tag: (\d+\.\d+\.\d+)")
+CONVENTIONAL_COMMIT_PATTERN = re.compile(r"^(?P<type>[a-zA-Z]+)(?:\((?P<scope>[^)]+)\))?:")
 
-OTHER_SECTION_HEADING = "### Other"
-UNCATEGORISED_SECTION_HEADING = "### Uncategorised!"
+OTHER_SECTION_HEADING = "#### Other"
+UNCATEGORISED_SECTION_HEADING = "#### Uncategorised!"
 
 COMMIT_CODES_TO_HEADINGS_MAPPING = {
-    "FEA": "### New features",
-    "ENH": "### Enhancements",
-    "FIX": "### Fixes",
-    "OPS": "### Operations",
-    "DEP": "### Dependencies",
-    "REF": "### Refactoring",
-    "TST": "### Testing",
+    "feat": "#### New Features",
+    "fix": "#### Bug Fixes",
+    "docs": "#### Documentation",
+    "style": "#### Style",
+    "refactor": "#### Refactoring",
+    "perf": "#### Performance Improvements",
+    "test": "#### Tests",
+    "build": "#### Build System",
+    "ci": "#### CI",
+    "chore": "#### Chores",
+    # Legacy mappings for backward compatibility
+    "FEA": "#### New features",
+    "ENH": "#### Enhancements",
+    "FIX": "#### Fixes",
+    "OPS": "#### Operations",
+    "DEP": "#### Dependencies",
+    "REF": "#### Refactoring",
+    "TST": "#### Testing",
     "MRG": OTHER_SECTION_HEADING,
-    "REV": "### Reversions",
-    "CHO": "### Chores",
-    "STY": "### Style",
+    "REV": "#### Reversions",
+    "CHO": "#### Chores",
+    "STY": "#### Style",
     "WIP": OTHER_SECTION_HEADING,
     "DOC": OTHER_SECTION_HEADING,
 }
@@ -70,7 +82,7 @@ class PullRequestDescriptionGenerator:
         stop_point,
         pull_request_url=None,
         api_token=None,
-        header="# Contents",
+        header="### Changelog",
         list_item_symbol="-",
         commit_codes_to_headings_mapping=None,
         include_link_to_pull_request=True,
@@ -219,20 +231,20 @@ class PullRequestDescriptionGenerator:
             if "tag" in decoration and bool(SEMANTIC_VERSION_PATTERN.search(decoration)):
                 break
 
-            # A colon separating the commit code from the commit header is required - keep commit messages that
-            # don't conform to this but put them into an unparsed category. Ignore commits that are merges of one
-            # commit ref into another (GitHub Actions produces these - they don't appear in the actual history of
-            # the branch so can be safely ignored when making release notes).
-            if ":" not in header:
+            # Check if the commit message follows conventional commit format
+            match = CONVENTIONAL_COMMIT_PATTERN.match(header)
+            if not match:
                 if not COMMIT_REF_MERGE_PATTERN.search(header):
                     unparsed_commits.append(header.strip())
                 continue
 
-            # Allow commit headers with extra colons.
-            code, *header = header.split(":")
-            header = ":".join(header)
+            # Extract type and scope (if present)
+            commit_type = match.group('type')
+            scope = match.group('scope')
+            # Get the rest of the message after the type(scope): prefix
+            message = header[header.find(':') + 1:].strip()
 
-            parsed_commits.append((code.strip(), header.strip(), body.strip()))
+            parsed_commits.append((commit_type.strip(), scope, message.strip(), body.strip()))
 
         return parsed_commits, unparsed_commits
 
@@ -249,20 +261,20 @@ class PullRequestDescriptionGenerator:
             header, *body = commit["commit"]["message"].split("\n")
             body = "\n".join(body)
 
-            # A colon separating the commit code from the commit header is required - keep commit messages that
-            # don't conform to this but put them into an unparsed category. Ignore commits that are merges of one
-            # commit ref into another (GitHub Actions produces these - they don't appear in the actual history of
-            # the branch so can be safely ignored when making release notes).
-            if ":" not in header:
+            # Check if the commit message follows conventional commit format
+            match = CONVENTIONAL_COMMIT_PATTERN.match(header)
+            if not match:
                 if not COMMIT_REF_MERGE_PATTERN.search(header):
                     unparsed_commits.append(header.strip())
                 continue
 
-            # Allow commit headers with extra colons.
-            code, *header = header.split(":")
-            header = ":".join(header)
+            # Extract type and scope (if present)
+            commit_type = match.group('type')
+            scope = match.group('scope')
+            # Get the rest of the message after the type(scope): prefix
+            message = header[header.find(':') + 1:].strip()
 
-            parsed_commits.append((code.strip(), header.strip(), body.strip()))
+            parsed_commits.append((commit_type.strip(), scope, message.strip(), body.strip()))
 
         return parsed_commits, unparsed_commits
 
@@ -279,10 +291,13 @@ class PullRequestDescriptionGenerator:
 
         breaking_change_upgrade_instructions = []
 
-        for code, header, body in parsed_commits:
+        for code, scope, header, body in parsed_commits:
             try:
+                # Format the commit note with scope if present
+                formatted_header = f"({scope}) {header}" if scope else header
+
                 if any(indicator in body for indicator in CONVENTIONAL_COMMIT_BREAKING_CHANGE_INDICATORS):
-                    commit_note = BREAKING_CHANGE_INDICATOR + header
+                    commit_note = BREAKING_CHANGE_INDICATOR + formatted_header
                     categorised_commits[BREAKING_CHANGE_COUNT_KEY] += 1
 
                     # Remove the breaking change indicator from the body and put the body in a collapsible section
@@ -291,13 +306,13 @@ class PullRequestDescriptionGenerator:
 
                     breaking_change_upgrade_instructions.append(
                         "<details>\n"
-                        f"<summary>💥 <b>{header}</b></summary>\n"
+                        f"<summary>💥 <b>{formatted_header}</b></summary>\n"
                         f"\n{upgrade_instruction}\n"
                         "</details>"
                     )
 
                 else:
-                    commit_note = header
+                    commit_note = formatted_header
 
                 categorised_commits[self.commit_codes_to_headings_mapping[code]].append(commit_note)
 

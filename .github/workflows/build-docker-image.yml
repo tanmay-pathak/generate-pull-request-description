@@ -32,4 +32,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: octue/generate-pull-request-description:${{ github.event.inputs.tag }}
+          tags: tanmay-pathak/generate-pull-request-description:${{ github.event.inputs.tag }}
